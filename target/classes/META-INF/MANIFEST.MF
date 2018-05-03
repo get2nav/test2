@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Built-By: naveenkumar
+Build-Jdk: 9.0.4
+Implementation-Title: spring-boot-hello
+Implementation-Version: 0.0.1-SNAPSHOT
+Implementation-Vendor-Id: spring-boot-hello
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
+ ot-starter-parent/spring-boot-hello
+Created-By: Maven Integration for Eclipse
+
