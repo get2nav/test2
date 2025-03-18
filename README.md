@@ -1,25 +1,23 @@
-import com.example.model.NodeDto;
 import java.util.Map;
 
-rule "Compare Node Versions"
+rule "Check Latest Version"
 when
-    // Extract attributes and filter identifier
-    $newNode : NodeDto($filterId : filterIdentifier, $newAttributes : getAttributes())
-    $existingNode : NodeDto(filterIdentifier == $newNode.filterIdentifier, $existingAttributes : getAttributes())
-
-    // Ensure attributes contain the filterIdentifier key
-    eval($newAttributes.containsKey($filterId) && $existingAttributes.containsKey($filterId))
-
-    // Extract versions
-    $newVersion : Map( this[$filterId] != null ) from $newAttributes
-    $existingVersion : Map( this[$filterId] != null ) from $existingAttributes
-
-    // Ensure versions are comparable
-    eval($newVersion instanceof Comparable && $existingVersion instanceof Comparable)
-
-    // Compare versions
-    eval(((Comparable) $newVersion).compareTo($existingVersion) > 0)
+    $newAttributes : Map(this["filterIdentifier"] != null)
+    $existingAttributes : Map(this["filterIdentifier"] != null)
+    $newVersion : Comparable() from $newAttributes["filterIdentifier"]
+    $existingVersion : Comparable() from $existingAttributes["filterIdentifier"]
+    eval($newVersion.compareTo($existingVersion) > 0)
 then
-    retract($existingNode);  // Remove older version
-    System.out.println("Current Node is the latest version");
+    System.out.println("New version is the latest.");
+end
+
+rule "Invalid Version"
+when
+    $newAttributes : Map(this["filterIdentifier"] != null)
+    $existingAttributes : Map(this["filterIdentifier"] != null)
+    $newVersion : Object() from $newAttributes["filterIdentifier"]
+    $existingVersion : Object() from $existingAttributes["filterIdentifier"]
+    not(eval($newVersion instanceof Comparable && $existingVersion instanceof Comparable))
+then
+    throw new IllegalArgumentException("Versions must be either Integer or Date and implement Comparable.");
 end
